@@ -1,9 +1,43 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Leaf, Brain, Globe, Users, Award, TrendingUp } from "lucide-react";
+import { api } from "@/services/api";
+
+interface AboutMetrics {
+  crops_analyzed: number;
+  active_users: number;
+  success_rate: number;
+  countries_served: number;
+}
 
 const About = () => {
+  const [metrics, setMetrics] = useState<AboutMetrics>({
+    crops_analyzed: 24,
+    active_users: 12847,
+    success_rate: 95,
+    countries_served: 8
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAboutMetrics();
+  }, []);
+
+  const fetchAboutMetrics = async () => {
+    setIsLoading(true);
+    try {
+      const response = await api.getAboutMetrics();
+      setMetrics(response);
+    } catch (error) {
+      console.error('Error fetching about metrics:', error);
+      // Keep default values if API fails
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const features = [
     {
       icon: Brain,
@@ -32,11 +66,27 @@ const About = () => {
     "Docker", "AWS", "Apache Spark", "Apache Kafka"
   ];
 
-  const metrics = [
-    { label: "Cultivos Analizados", value: "24", icon: Leaf },
-    { label: "Usuarios Activos", value: "12,847", icon: Users },
-    { label: "Predicciones Exitosas", value: "95%", icon: TrendingUp },
-    { label: "Países Atendidos", value: "8", icon: Globe }
+  const metricsDisplay = [
+    { 
+      label: "Cultivos Analizados", 
+      value: isLoading ? "..." : metrics.crops_analyzed.toString(), 
+      icon: Leaf 
+    },
+    { 
+      label: "Usuarios Activos", 
+      value: isLoading ? "..." : metrics.active_users.toLocaleString(), 
+      icon: Users 
+    },
+    { 
+      label: "Predicciones Exitosas", 
+      value: isLoading ? "..." : `${metrics.success_rate}%`, 
+      icon: TrendingUp 
+    },
+    { 
+      label: "Países Atendidos", 
+      value: isLoading ? "..." : metrics.countries_served.toString(), 
+      icon: Globe 
+    }
   ];
 
   return (
@@ -72,7 +122,7 @@ const About = () => {
 
         {/* Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-          {metrics.map((metric, index) => (
+          {metricsDisplay.map((metric, index) => (
             <Card key={index} className="border-green-100 text-center hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <metric.icon className="h-8 w-8 text-green-600 mx-auto mb-3" />

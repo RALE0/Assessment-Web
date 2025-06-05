@@ -361,6 +361,22 @@ class CropRecommendationAPI {
     return response.json();
   }
 
+  // About page metrics endpoint
+  async getAboutMetrics(): Promise<{
+    crops_analyzed: number;
+    active_users: number;
+    success_rate: number;
+    countries_served: number;
+  }> {
+    const response = await fetch(`${this.baseUrl}/api/about/metrics`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get about metrics: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
   // Chatbot endpoint
   async sendChatMessage(message: string, conversationId?: string): Promise<{
     response: string;

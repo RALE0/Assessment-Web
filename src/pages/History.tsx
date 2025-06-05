@@ -84,14 +84,52 @@ const History = () => {
     try {
       const token = localStorage.getItem('authToken');
       const userLogs = await api.getUserPredictionLogs(user.id, token || undefined);
-      setLogs(userLogs || []);
-    } catch (error) {
+      
+      // Transform the backend response to match the frontend interface
+      const transformedLogs = userLogs.map((log: any) => ({
+        id: log.id,
+        userId: log.userId,
+        timestamp: log.timestamp,
+        inputFeatures: {
+          N: log.inputFeatures.N,
+          P: log.inputFeatures.P,
+          K: log.inputFeatures.K,
+          temperature: log.inputFeatures.temperature,
+          humidity: log.inputFeatures.humidity,
+          ph: log.inputFeatures.ph,
+          rainfall: log.inputFeatures.rainfall
+        },
+        predictedCrop: log.predictedCrop,
+        confidence: log.confidence,
+        topPredictions: log.topPredictions || [],
+        status: log.status || 'success',
+        processingTime: log.processingTime
+      }));
+      
+      setLogs(transformedLogs || []);
+    } catch (error: any) {
       console.error('Error fetching user logs:', error);
-      toast({
-        title: "Error del servidor",
-        description: "El sistema de historial no está disponible temporalmente. Contacta al administrador si el problema persiste.",
-        variant: "destructive"
-      });
+      
+      // More specific error messages based on the error type
+      if (error.message?.includes('404') || error.message?.includes('not found')) {
+        toast({
+          title: "Historial no disponible",
+          description: "El servicio de historial aún no está implementado en el servidor. Por favor, contacta al administrador.",
+          variant: "destructive"
+        });
+      } else if (error.message?.includes('401') || error.message?.includes('unauthorized')) {
+        toast({
+          title: "No autorizado",
+          description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error del servidor",
+          description: "No se pudo cargar el historial. Intenta de nuevo más tarde.",
+          variant: "destructive"
+        });
+      }
       setLogs([]);
     } finally {
       setIsLoading(false);

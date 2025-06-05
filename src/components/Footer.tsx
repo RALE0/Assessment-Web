@@ -40,7 +40,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/analytics" className="text-green-100 hover:text-white transition-colors">
-                  Analytics
+                  Analítica
                 </Link>
               </li>
               <li>

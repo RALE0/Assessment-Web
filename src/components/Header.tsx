@@ -24,7 +24,7 @@ export const Header = () => {
   const navigation = [
     { name: "Dashboard", href: "/dashboard" },
     { name: "Recomendaciones", href: "/recommendations" },
-    { name: "Analytics", href: "/analytics" },
+    { name: "Analítica", href: "/analytics" },
     { name: "Historial", href: "/history" },
     { name: "Acerca de", href: "/about" },
   ];

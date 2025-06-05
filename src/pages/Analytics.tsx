@@ -140,7 +140,7 @@ const Analytics = () => {
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Analítica</h1>
           <p className="text-gray-600">
             Análisis detallado del rendimiento y métricas del modelo de IA
           </p>
@@ -309,14 +309,14 @@ const Analytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-blue-600" />
-                <span>P95 Response Time</span>
+                <span>Tiempo de respuesta (95%)</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900 mb-2">
                 {isLoading ? "..." : performanceMetrics.p95_response_time > 0 ? `${performanceMetrics.p95_response_time}s` : "N/A"}
               </div>
-              <p className="text-sm text-gray-600">95th percentile response time</p>
+              <p className="text-sm text-gray-600">Percentil 95 del tiempo de respuesta</p>
             </CardContent>
           </Card>
 
@@ -325,14 +325,14 @@ const Analytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-orange-600" />
-                <span>P99 Response Time</span>
+                <span>Tiempo de respuesta (99%)</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900 mb-2">
                 {isLoading ? "..." : performanceMetrics.p99_response_time > 0 ? `${performanceMetrics.p99_response_time}s` : "N/A"}
               </div>
-              <p className="text-sm text-gray-600">99th percentile response time</p>
+              <p className="text-sm text-gray-600">Percentil 99 del tiempo de respuesta</p>
             </CardContent>
           </Card>
         </div>

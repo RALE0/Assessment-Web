@@ -523,25 +523,189 @@ class CropRecommendationAPI {
   }
 
   // User prediction logs endpoints
-  async getUserPredictionLogs(userId: string, token?: string): Promise<PredictionLog[]> {
+  async getUserPredictionLogs(userId: string, token?: string, params?: {
+    limit?: number;
+    offset?: number;
+    dateFrom?: string;
+    dateTo?: string;
+    crop?: string;
+    status?: 'success' | 'error';
+    orderBy?: 'timestamp' | 'confidence' | 'predicted_crop' | 'processing_time';
+    orderDirection?: 'asc' | 'desc';
+  }): Promise<{ logs: PredictionLog[], pagination: { total: number, limit: number, offset: number, hasMore: boolean } }> {
     const headers: Record<string, string> = {};
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/users/${userId}/prediction-logs`, {
-      headers,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      const error: ApiError = result;
-      throw new Error(error.error || 'Failed to get user prediction logs');
+    // Build query string
+    const queryParams = new URLSearchParams();
+    if (params) {
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.offset) queryParams.append('offset', params.offset.toString());
+      if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);
+      if (params.dateTo) queryParams.append('dateTo', params.dateTo);
+      if (params.crop) queryParams.append('crop', params.crop);
+      if (params.status) queryParams.append('status', params.status);
+      if (params.orderBy) queryParams.append('orderBy', params.orderBy);
+      if (params.orderDirection) queryParams.append('orderDirection', params.orderDirection);
     }
 
-    return result.logs;
+    try {
+      const url = `${this.baseUrl}/api/users/${userId}/prediction-logs${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Endpoint not found - History feature not implemented on backend');
+        }
+        if (response.status === 401) {
+          throw new Error('Unauthorized - Please login again');
+        }
+        if (response.status === 403) {
+          throw new Error('Forbidden - Cannot access other users\' data');
+        }
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(error.error || `Failed to get user prediction logs (${response.status})`);
+      }
+
+      const result = await response.json();
+      return {
+        logs: result.data?.logs || [],
+        pagination: result.data?.pagination || { total: 0, limit: 50, offset: 0, hasMore: false }
+      };
+    } catch (error: any) {
+      // If it's already an Error object, re-throw it
+      if (error instanceof Error) {
+        throw error;
+      }
+      // Otherwise, wrap it
+      throw new Error(error.message || 'Failed to get user prediction logs');
+    }
+  }
+
+  async getUserPredictionStatistics(userId: string, token?: string, params?: {
+    period?: '7d' | '30d' | '90d' | '1y' | 'all';
+    groupBy?: 'day' | 'week' | 'month';
+  }): Promise<{
+    statistics: {
+      totalPredictions: number;
+      successfulPredictions: number;
+      failedPredictions: number;
+      successRate: number;
+      avgConfidence: number;
+      avgProcessingTime: number;
+      mostPredictedCrop: string | null;
+      firstPrediction: string | null;
+      lastPrediction: string | null;
+    };
+    timeline: Array<{
+      date: string;
+      predictions: number;
+      avgConfidence: number;
+    }>;
+    cropDistribution: Array<{
+      crop: string;
+      count: number;
+      percentage: number;
+    }>;
+  }> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Build query string
+    const queryParams = new URLSearchParams();
+    if (params) {
+      if (params.period) queryParams.append('period', params.period);
+      if (params.groupBy) queryParams.append('groupBy', params.groupBy);
+    }
+
+    try {
+      const url = `${this.baseUrl}/api/users/${userId}/prediction-statistics${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized - Please login again');
+        }
+        if (response.status === 403) {
+          throw new Error('Forbidden - Cannot access other users\' data');
+        }
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(error.error || `Failed to get user prediction statistics (${response.status})`);
+      }
+
+      const result = await response.json();
+      return result.data || {
+        statistics: {
+          totalPredictions: 0,
+          successfulPredictions: 0,
+          failedPredictions: 0,
+          successRate: 0,
+          avgConfidence: 0,
+          avgProcessingTime: 0,
+          mostPredictedCrop: null,
+          firstPrediction: null,
+          lastPrediction: null
+        },
+        timeline: [],
+        cropDistribution: []
+      };
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(error.message || 'Failed to get user prediction statistics');
+    }
+  }
+
+  async exportUserPredictionLogs(userId: string, token?: string, params?: {
+    dateFrom?: string;
+    dateTo?: string;
+    crop?: string;
+    status?: 'success' | 'error';
+  }): Promise<Blob> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Build query string
+    const queryParams = new URLSearchParams();
+    if (params) {
+      if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);
+      if (params.dateTo) queryParams.append('dateTo', params.dateTo);
+      if (params.crop) queryParams.append('crop', params.crop);
+      if (params.status) queryParams.append('status', params.status);
+    }
+
+    try {
+      const url = `${this.baseUrl}/api/users/${userId}/prediction-logs/export${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized - Please login again');
+        }
+        if (response.status === 403) {
+          throw new Error('Forbidden - Cannot access other users\' data');
+        }
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(error.error || `Failed to export user prediction logs (${response.status})`);
+      }
+
+      return await response.blob();
+    } catch (error: any) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(error.message || 'Failed to export user prediction logs');
+    }
   }
 
   async savePredictionLog(predictionData: {
@@ -558,14 +722,30 @@ class CropRecommendationAPI {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    // Transform the data to match backend expected format
+    const transformedData = {
+      userId: predictionData.userId,
+      inputFeatures: predictionData.inputFeatures,
+      prediction: {
+        predicted_crop: predictionData.prediction.predicted_crop,
+        confidence: predictionData.prediction.confidence,
+        top_predictions: predictionData.prediction.top_predictions,
+        timestamp: predictionData.prediction.timestamp
+      },
+      processingTime: predictionData.processingTime,
+      sessionId: localStorage.getItem('sessionId') || undefined,
+      ipAddress: undefined, // Will be captured by backend
+      userAgent: navigator.userAgent
+    };
+
     const response = await fetch(`${this.baseUrl}/api/prediction-logs`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(predictionData),
+      body: JSON.stringify(transformedData),
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
       throw new Error(error.error || 'Failed to save prediction log');
     }
   }

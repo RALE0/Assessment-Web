@@ -79,7 +79,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">IA Avanzada</h3>
                 <p className="text-gray-600">
-                  Algoritmos de machine learning entrenados con miles de datos 
+                  Algoritmos de machine learning entrenados con cientos de datos 
                   agrícolas para precisión superior al 95%.
                 </p>
               </CardContent>
@@ -92,7 +92,7 @@ const Index = () => {
               ¿Listo para revolucionar tu agricultura?
             </h2>
             <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-              Únete a más de 10,000 agricultores que ya están optimizando sus cultivos con AgriAI.
+              Únete a los agricultores que ya están optimizando sus cultivos con AgriAI.
             </p>
             <Button 
               asChild 

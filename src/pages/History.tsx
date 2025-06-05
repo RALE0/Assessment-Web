@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Filter, Calendar, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Calendar, Download, ChevronLeft, ChevronRight, History as HistoryIcon, TrendingUp, BarChart3 } from "lucide-react";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -53,8 +53,8 @@ const History = () => {
   const [filters, setFilters] = useState<LogFilters>({
     dateFrom: '',
     dateTo: '',
-    crop: '',
-    status: '',
+    crop: 'all',
+    status: 'all',
     search: ''
   });
 
@@ -82,15 +82,17 @@ const History = () => {
     
     setIsLoading(true);
     try {
-      const userLogs = await api.getUserPredictionLogs(user.id);
-      setLogs(userLogs);
+      const token = localStorage.getItem('authToken');
+      const userLogs = await api.getUserPredictionLogs(user.id, token || undefined);
+      setLogs(userLogs || []);
     } catch (error) {
       console.error('Error fetching user logs:', error);
       toast({
-        title: "Error",
-        description: "No se pudieron cargar los logs de predicciones",
+        title: "Error del servidor",
+        description: "El sistema de historial no está disponible temporalmente. Contacta al administrador si el problema persiste.",
         variant: "destructive"
       });
+      setLogs([]);
     } finally {
       setIsLoading(false);
     }
@@ -121,14 +123,14 @@ const History = () => {
     }
 
     // Crop filter
-    if (filters.crop) {
+    if (filters.crop && filters.crop !== 'all') {
       filtered = filtered.filter(log => 
         log.predictedCrop.toLowerCase().includes(filters.crop.toLowerCase())
       );
     }
 
     // Status filter
-    if (filters.status) {
+    if (filters.status && filters.status !== 'all') {
       filtered = filtered.filter(log => log.status === filters.status);
     }
 
@@ -196,7 +198,7 @@ const History = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center">
         <Card className="w-96">
           <CardContent className="pt-6">
             <p className="text-center text-gray-600">
@@ -210,14 +212,63 @@ const History = () => {
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Historial de Predicciones</h1>
-          <p className="text-gray-600">Consulta y analiza tu historial de predicciones de cultivos</p>
-        </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Historial de Predicciones</h1>
+            <p className="text-gray-600">Consulta y analiza tu historial de predicciones de cultivos</p>
+          </div>
 
-        {/* Filters */}
-        <Card className="mb-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="border-green-200">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Predicciones</p>
+                    <p className="text-3xl font-bold text-green-600">{logs.length}</p>
+                  </div>
+                  <div className="bg-green-100 p-3 rounded-full">
+                    <BarChart3 className="h-6 w-6 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-200">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Predicciones Exitosas</p>
+                    <p className="text-3xl font-bold text-blue-600">
+                      {logs.filter(log => log.status === 'success').length}
+                    </p>
+                  </div>
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <TrendingUp className="h-6 w-6 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tasa de Éxito</p>
+                    <p className="text-3xl font-bold text-purple-600">
+                      {logs.length > 0 ? Math.round((logs.filter(log => log.status === 'success').length / logs.length) * 100) : 0}%
+                    </p>
+                  </div>
+                  <div className="bg-purple-100 p-3 rounded-full">
+                    <Calendar className="h-6 w-6 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filters */}
+          <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="h-5 w-5" />
@@ -272,7 +323,7 @@ const History = () => {
                     <SelectValue placeholder="Todos los cultivos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los cultivos</SelectItem>
+                    <SelectItem value="all">Todos los cultivos</SelectItem>
                     {availableCrops.map(crop => (
                       <SelectItem key={crop} value={crop}>{crop}</SelectItem>
                     ))}
@@ -287,7 +338,7 @@ const History = () => {
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los estados</SelectItem>
+                  <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="success">Exitoso</SelectItem>
                   <SelectItem value="error">Error</SelectItem>
                 </SelectContent>
@@ -298,8 +349,8 @@ const History = () => {
                 onClick={() => setFilters({
                   dateFrom: '',
                   dateTo: '',
-                  crop: '',
-                  status: '',
+                  crop: 'all',
+                  status: 'all',
                   search: ''
                 })}
               >
@@ -319,16 +370,16 @@ const History = () => {
           </CardContent>
         </Card>
 
-        {/* Results Summary */}
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">
-            Mostrando {getCurrentPageLogs().length} de {filteredLogs.length} predicciones
-            {logs.length !== filteredLogs.length && ` (filtrado de ${logs.length} total)`}
-          </p>
-        </div>
+          {/* Results Summary */}
+          <div className="mb-4">
+            <p className="text-sm text-gray-600">
+              Mostrando {getCurrentPageLogs().length} de {filteredLogs.length} predicciones
+              {logs.length !== filteredLogs.length && ` (filtrado de ${logs.length} total)`}
+            </p>
+          </div>
 
-        {/* Logs Table */}
-        <Card>
+          {/* Logs Table */}
+          <Card>
           <CardContent className="p-0">
             {isLoading ? (
               <div className="h-96 flex items-center justify-center">
@@ -427,8 +478,8 @@ const History = () => {
               </>
             )}
           </CardContent>
-        </Card>
-      </div>
+          </Card>
+        </div>
     </div>
   );
 };

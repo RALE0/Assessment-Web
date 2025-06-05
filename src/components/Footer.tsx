@@ -57,15 +57,15 @@ export const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-green-300" />
-                <span className="text-green-100">info@agriai.com</span>
+                <span className="text-green-100">a01252831@tec.mx</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-green-300" />
-                <span className="text-green-100">+1 (555) 123-4567</span>
+                <span className="text-green-100">+52 (662) 227-1342</span>
               </li>
               <li className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-green-300" />
-                <span className="text-green-100">Ciudad de México, México</span>
+                <span className="text-green-100">Tec de Monterrey, CSF</span>
               </li>
             </ul>
           </div>
@@ -73,7 +73,7 @@ export const Footer = () => {
 
         <div className="border-t border-green-700 mt-8 pt-6 text-center">
           <p className="text-green-200">
-            © 2024 AgriAI Platform. Todos los derechos reservados.
+            © 2025 Ciscos. Todos los derechos reservados.
           </p>
         </div>
       </div>

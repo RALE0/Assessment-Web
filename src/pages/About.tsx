@@ -42,12 +42,12 @@ const About = () => {
     {
       icon: Brain,
       title: "Inteligencia Artificial Avanzada",
-      description: "Algoritmos de machine learning entrenados con datos de más de 50,000 cultivos y análisis climáticos históricos."
+      description: "Algoritmos de machine learning entrenados con datos de más de 2,200 cultivos."
     },
     {
       icon: Globe,
       title: "Cobertura Regional",
-      description: "Optimizado para condiciones específicas de Latinoamérica con datos locales de suelo y clima."
+      description: "Optimizado para condiciones específicas de suelo y clima."
     },
     {
       icon: Users,
@@ -57,13 +57,13 @@ const About = () => {
     {
       icon: Award,
       title: "Precisión Comprobada",
-      description: "97.8% de precisión en recomendaciones validadas por estudios de campo independientes."
+      description: "97.8% de precisión en recomendaciones."
     }
   ];
 
   const technologies = [
     "TensorFlow", "Scikit-learn", "Python", "React", "Node.js", "PostgreSQL", 
-    "Docker", "AWS", "Apache Spark", "Apache Kafka"
+    "Docker"
   ];
 
   const metricsDisplay = [
@@ -208,7 +208,7 @@ const About = () => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Procesamiento IA</h3>
                 <p className="text-gray-600">
-                  Nuestros algoritmos analizan los datos contra nuestra base de conocimiento agrícola.
+                  Nuestros algoritmos analizan los datos.
                 </p>
               </div>
               
@@ -235,10 +235,10 @@ const About = () => {
             </p>
             <div className="space-y-2">
               <p className="text-green-100">
-                <strong>Contacto:</strong> info@agriai.com | +1 (555) 123-4567
+                <strong>Contacto:</strong> a01252831@tec.mx | +52 (662) 227-1342
               </p>
               <p className="text-green-100">
-                <strong>Ubicación:</strong> Ciudad de México, México
+                <strong>Ubicación:</strong> Tec de Monterrey, CSF
               </p>
             </div>
           </CardContent>

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443';
 
 export interface PredictionRequest {
   N: number;
@@ -345,37 +345,37 @@ class CropRecommendationAPI {
   }
 
   // Analytics endpoints
-  async getAccuracyTrend(token?: string): Promise<{ data: any[], timestamp: string }> {
+  async getResponseTimeData(token?: string): Promise<{ data: { timestamp: string; responseTime: number }[], timestamp: string }> {
     const headers: Record<string, string> = {};
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/accuracy-trend`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/response-time-data`, {
       headers,
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to get accuracy trend: ${response.status}`);
+      throw new Error(`Failed to get response time data: ${response.status}`);
     }
     
     return response.json();
   }
 
-  async getRegionalDistribution(token?: string): Promise<{ data: any[], timestamp: string }> {
+  async getUserPredictions(token?: string): Promise<{ predictions: { date: string; user: string; recommendedCrop: string; confidence: number }[], timestamp: string }> {
     const headers: Record<string, string> = {};
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/regional-distribution`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/user-predictions`, {
       headers,
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to get regional distribution: ${response.status}`);
+      throw new Error(`Failed to get user predictions: ${response.status}`);
     }
     
     return response.json();

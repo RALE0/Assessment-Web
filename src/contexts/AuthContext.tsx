@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = localStorage.getItem('authToken');
       if (token) {
         // Validate token with backend
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443'}/auth/verify`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/verify`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (username: string, password: string): Promise<void> => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443'}/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await logSessionActivity('logout', user.id);
         
         // Notify backend of logout
-        await fetch(`${import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443'}/auth/logout`, {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signup = async (username: string, email: string, password: string): Promise<void> => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443'}/auth/signup`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const resetPassword = async (email: string): Promise<void> => {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443'}/auth/reset-password`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/reset-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logSessionActivity = async (activity: string, userId: string): Promise<void> => {
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL || '172.28.69.96:8443'}/auth/log-activity`, {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/log-activity`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

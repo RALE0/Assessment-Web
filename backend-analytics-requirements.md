@@ -1,7 +1,9 @@
-# Backend Analytics API Requirements
+# Backend Analytics API Requirements - URGENT IMPLEMENTATION NEEDED
 
 ## Overview
-This document outlines the backend API endpoints, data structures, and database modifications required to support the real-time analytics metrics displayed on the frontend Analytics page.
+The frontend Analytics page is currently showing fallback mock data because the backend API endpoints are not implemented. The frontend is already configured to call the real endpoints but falls back to sample data when they fail.
+
+**CRITICAL**: These endpoints must be implemented to show real analytics data instead of mock data in the "Tiempo de Respuesta", "Satisfacción Usuario", and "ROI Promedio" cards.
 
 ## Required API Endpoints
 
@@ -97,9 +99,10 @@ This document outlines the backend API endpoints, data structures, and database 
   - warning: >= target - 5%
   - poor: < target - 5%
 
-### 4. Performance Metrics Endpoint
+### 4. Performance Metrics Endpoint ⚠️ MOST CRITICAL - FIXES MOCK DATA ISSUE
 **Endpoint**: `GET /api/analytics/performance-metrics`
 **Authentication**: Bearer token (optional)
+**Frontend Impact**: This endpoint directly feeds the "Tiempo de Respuesta", "Satisfacción Usuario", and "ROI Promedio" cards
 
 **Response Structure**:
 ```json
@@ -188,6 +191,23 @@ CREATE TABLE harvest_outcomes (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 ```
+
+## IMMEDIATE IMPLEMENTATION PRIORITY
+
+### CRITICAL - Implement these endpoints to eliminate mock data:
+
+1. **`GET /api/analytics/performance-metrics`** - HIGHEST PRIORITY
+   - Eliminates mock data in "Tiempo de Respuesta", "Satisfacción Usuario", "ROI Promedio" cards
+   - Frontend is calling this endpoint and falling back to mock data on failure
+
+2. **`GET /api/analytics/model-metrics`** - HIGH PRIORITY  
+   - Eliminates mock data in the 4 performance metric cards at the top
+
+3. **`GET /api/analytics/accuracy-trend`** - MEDIUM PRIORITY
+   - Eliminates mock data in the accuracy trend chart
+
+4. **`GET /api/analytics/regional-distribution`** - LOWER PRIORITY
+   - Eliminates mock data in the regional pie chart
 
 ## Implementation Tasks
 

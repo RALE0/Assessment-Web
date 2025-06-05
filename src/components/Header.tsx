@@ -106,13 +106,6 @@ export const Header = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Mi Perfil</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className="cursor-pointer text-red-600 focus:text-red-600"
                     onClick={handleLogout}
@@ -173,14 +166,6 @@ export const Header = () => {
                         <p className="text-xs text-gray-600">{user.email}</p>
                       )}
                     </div>
-                    <Link
-                      to="/dashboard"
-                      className="flex items-center px-4 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg font-medium transition-all duration-200"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <User className="mr-2 h-4 w-4" />
-                      Mi Perfil
-                    </Link>
                     <button
                       onClick={() => {
                         handleLogout();

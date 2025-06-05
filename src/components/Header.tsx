@@ -25,6 +25,7 @@ export const Header = () => {
     { name: "Dashboard", href: "/dashboard" },
     { name: "Recomendaciones", href: "/recommendations" },
     { name: "Analytics", href: "/analytics" },
+    { name: "Historial", href: "/history" },
     { name: "Acerca de", href: "/about" },
   ];
 

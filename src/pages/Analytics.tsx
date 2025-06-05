@@ -73,30 +73,53 @@ const Analytics = () => {
   const fetchAnalyticsData = async () => {
     setIsLoading(true);
     try {
-      // Fetch accuracy trend data
-      const accuracyResponse = await api.getAccuracyTrend();
-      setAccuracyData(accuracyResponse.data);
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      // Fetch regional distribution
-      const regionResponse = await api.getRegionalDistribution();
-      setRegionData(regionResponse.data);
+      // Fetch all analytics data in parallel
+      const [
+        accuracyResponse,
+        regionResponse, 
+        metricsResponse,
+        performanceResponse
+      ] = await Promise.all([
+        api.getAccuracyTrend(token),
+        api.getRegionalDistribution(token),
+        api.getModelMetrics(token),
+        api.getPerformanceMetrics(token)
+      ]);
 
-      // Fetch model metrics
-      const metricsResponse = await api.getModelMetrics();
-      setModelMetrics(metricsResponse.metrics);
-
-      // Fetch performance metrics
-      const performanceResponse = await api.getPerformanceMetrics();
-      setPerformanceMetrics(performanceResponse);
+      // Process and set the real data
+      setAccuracyData(accuracyResponse.data || []);
+      setRegionData(regionResponse.data || []);
+      setModelMetrics(metricsResponse.metrics || []);
+      setPerformanceMetrics({
+        average_response_time: performanceResponse.average_response_time || 0,
+        p95_response_time: performanceResponse.p95_response_time || 0,
+        p99_response_time: performanceResponse.p99_response_time || 0,
+        user_satisfaction_score: performanceResponse.user_satisfaction_score || 0,
+        total_reviews: performanceResponse.total_reviews || 0,
+        positive_percentage: performanceResponse.positive_percentage || 0,
+        average_roi_increase: performanceResponse.average_roi_increase || 0,
+        vs_traditional_farming: performanceResponse.vs_traditional_farming || "vs cultivos tradicionales",
+        last_harvest_date: performanceResponse.last_harvest_date || new Date().toLocaleDateString()
+      });
 
     } catch (error) {
       console.error('Error fetching analytics data:', error);
       toast({
-        title: "Error",
-        description: "No se pudieron cargar los datos de analytics",
+        title: "Error de Conexión",
+        description: "No se pudo conectar con el servidor. Mostrando datos de ejemplo.",
         variant: "destructive"
       });
-      // Use default data if API fails
+      
+      // Fallback to sample data if backend is not available
       setAccuracyData([
         { month: "Ene", accuracy: 94.2 },
         { month: "Feb", accuracy: 95.1 },

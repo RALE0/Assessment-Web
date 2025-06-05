@@ -103,6 +103,30 @@ export interface SessionLog {
   userAgent: string;
 }
 
+export interface PredictionLog {
+  id: string;
+  userId: string;
+  timestamp: string;
+  inputFeatures: {
+    N: number;
+    P: number;
+    K: number;
+    temperature: number;
+    humidity: number;
+    ph: number;
+    rainfall: number;
+  };
+  predictedCrop: string;
+  confidence: number;
+  topPredictions: {
+    crop: string;
+    probability: number;
+  }[];
+  status: 'success' | 'error';
+  processingTime?: number;
+  errorMessage?: string;
+}
+
 class CropRecommendationAPI {
   private baseUrl: string;
 
@@ -321,8 +345,16 @@ class CropRecommendationAPI {
   }
 
   // Analytics endpoints
-  async getAccuracyTrend(): Promise<{ data: any[], timestamp: string }> {
-    const response = await fetch(`${this.baseUrl}/api/analytics/accuracy-trend`);
+  async getAccuracyTrend(token?: string): Promise<{ data: any[], timestamp: string }> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/analytics/accuracy-trend`, {
+      headers,
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to get accuracy trend: ${response.status}`);
@@ -331,8 +363,16 @@ class CropRecommendationAPI {
     return response.json();
   }
 
-  async getRegionalDistribution(): Promise<{ data: any[], timestamp: string }> {
-    const response = await fetch(`${this.baseUrl}/api/analytics/regional-distribution`);
+  async getRegionalDistribution(token?: string): Promise<{ data: any[], timestamp: string }> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/analytics/regional-distribution`, {
+      headers,
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to get regional distribution: ${response.status}`);
@@ -341,8 +381,16 @@ class CropRecommendationAPI {
     return response.json();
   }
 
-  async getModelMetrics(): Promise<{ metrics: any[], timestamp: string }> {
-    const response = await fetch(`${this.baseUrl}/api/analytics/model-metrics`);
+  async getModelMetrics(token?: string): Promise<{ metrics: any[], timestamp: string }> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/analytics/model-metrics`, {
+      headers,
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to get model metrics: ${response.status}`);
@@ -351,8 +399,16 @@ class CropRecommendationAPI {
     return response.json();
   }
 
-  async getPerformanceMetrics(): Promise<any> {
-    const response = await fetch(`${this.baseUrl}/api/analytics/performance-metrics`);
+  async getPerformanceMetrics(token?: string): Promise<any> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/analytics/performance-metrics`, {
+      headers,
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to get performance metrics: ${response.status}`);
@@ -403,6 +459,54 @@ class CropRecommendationAPI {
     }
 
     return result;
+  }
+
+  // User prediction logs endpoints
+  async getUserPredictionLogs(userId: string, token?: string): Promise<PredictionLog[]> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/users/${userId}/prediction-logs`, {
+      headers,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const error: ApiError = result;
+      throw new Error(error.error || 'Failed to get user prediction logs');
+    }
+
+    return result.logs;
+  }
+
+  async savePredictionLog(predictionData: {
+    userId: string;
+    inputFeatures: PredictionRequest;
+    prediction: PredictionResponse;
+    processingTime?: number;
+  }, token?: string): Promise<void> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/api/prediction-logs`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(predictionData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to save prediction log');
+    }
   }
 }
 

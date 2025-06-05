@@ -13,6 +13,7 @@ import Recommendations from "./pages/Recommendations";
 import Analytics from "./pages/Analytics";
 import About from "./pages/About";
 import Auth from "./pages/Auth";
+import History from "./pages/History";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Layout><Analytics /></Layout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/history" 
+              element={
+                <ProtectedRoute>
+                  <Layout><History /></Layout>
                 </ProtectedRoute>
               } 
             />

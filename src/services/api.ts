@@ -344,6 +344,67 @@ class CropRecommendationAPI {
     return response.json();
   }
 
+  // User-specific dashboard endpoints
+  async getUserDashboardMetrics(userId?: string, token?: string): Promise<any> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const url = userId 
+      ? `${this.baseUrl}/api/dashboard/user/${userId}/metrics`
+      : `${this.baseUrl}/api/dashboard/metrics`;
+
+    const response = await fetch(url, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get user dashboard metrics: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getUserMonthlyPredictions(userId?: string, token?: string): Promise<{ data: any[], timestamp: string }> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const url = userId 
+      ? `${this.baseUrl}/api/dashboard/user/${userId}/monthly-predictions`
+      : `${this.baseUrl}/api/dashboard/monthly-predictions`;
+
+    const response = await fetch(url, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get user monthly predictions: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getUserCropDistribution(userId?: string, token?: string): Promise<{ data: any[], timestamp: string }> {
+    const headers: Record<string, string> = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const url = userId 
+      ? `${this.baseUrl}/api/dashboard/user/${userId}/crop-distribution`
+      : `${this.baseUrl}/api/dashboard/crop-distribution`;
+
+    const response = await fetch(url, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get user crop distribution: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
   // Analytics endpoints
   async getResponseTimeData(token?: string): Promise<{ data: { timestamp: string; responseTime: number }[], timestamp: string }> {
     const headers: Record<string, string> = {};

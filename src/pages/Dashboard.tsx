@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, Users, Target, Leaf } from "lucide-react";
 import { api } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardMetrics {
   predictions_generated: number;
@@ -29,6 +30,7 @@ interface CropDistribution {
 }
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     predictions_generated: 0,
     predictions_change: 0,
@@ -50,16 +52,18 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Fetch dashboard metrics
-      const metricsResponse = await api.getDashboardMetrics();
+      const token = localStorage.getItem('authToken');
+      
+      // Fetch user-specific dashboard metrics
+      const metricsResponse = await api.getUserDashboardMetrics(user?.id, token);
       setMetrics(metricsResponse);
 
-      // Fetch monthly predictions data
-      const monthlyResponse = await api.getMonthlyPredictions();
+      // Fetch user-specific monthly predictions data
+      const monthlyResponse = await api.getUserMonthlyPredictions(user?.id, token);
       setMonthlyPredictions(monthlyResponse.data);
 
-      // Fetch crop distribution data
-      const cropResponse = await api.getCropDistribution();
+      // Fetch user-specific crop distribution data
+      const cropResponse = await api.getUserCropDistribution(user?.id, token);
       setCropDistribution(cropResponse.data);
 
     } catch (error) {

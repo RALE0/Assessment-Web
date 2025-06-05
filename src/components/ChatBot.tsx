@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Upload, Send, Leaf } from "lucide-react";
+import { api } from "@/services/api";
+import { toast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -31,6 +33,7 @@ export const ChatBot = () => {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -55,20 +58,47 @@ export const ChatBot = () => {
     setInputMessage("");
     setIsTyping(true);
 
-    // Simular respuesta del bot
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Send message to backend API
+      const response = await api.sendChatMessage(message, conversationId);
+      
+      // Update conversation ID if this is the first message
+      if (!conversationId && response.conversationId) {
+        setConversationId(response.conversationId);
+      }
 
-    const botResponse = generateBotResponse(message);
-    const botMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: 'bot',
-      content: botResponse.content,
-      timestamp: new Date(),
-      suggestions: botResponse.suggestions
-    };
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        content: response.response,
+        timestamp: new Date(),
+        suggestions: response.suggestions
+      };
 
-    setMessages(prev => [...prev, botMessage]);
-    setIsTyping(false);
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      
+      // Fallback to local response if API fails
+      const botResponse = generateBotResponse(message);
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        content: botResponse.content,
+        timestamp: new Date(),
+        suggestions: botResponse.suggestions
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+      
+      toast({
+        title: "Advertencia",
+        description: "Usando respuestas offline. La conexión con el servidor no está disponible.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const generateBotResponse = (userMessage: string): { content: string, suggestions?: string[] } => {

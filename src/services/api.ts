@@ -56,6 +56,53 @@ export interface Feature {
   description: string;
 }
 
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    username: string;
+    email?: string;
+    lastLoginAt: string;
+    sessionStartedAt: string;
+  };
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+}
+
+export interface SignupRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface SessionActivity {
+  userId: string;
+  activity: 'login' | 'logout' | 'page_view' | 'action';
+  timestamp: string;
+  userAgent?: string;
+  ipAddress?: string;
+  details?: Record<string, any>;
+}
+
+export interface SessionLog {
+  id: string;
+  userId: string;
+  sessionId: string;
+  startTime: string;
+  endTime?: string;
+  duration?: number;
+  activities: SessionActivity[];
+  ipAddress: string;
+  userAgent: string;
+}
+
 class CropRecommendationAPI {
   private baseUrl: string;
 
@@ -118,6 +165,228 @@ class CropRecommendationAPI {
     );
     
     return results;
+  }
+
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
+    const response = await fetch(`${this.baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const error: ApiError = result;
+      throw new Error(error.error || 'Login failed');
+    }
+
+    return result;
+  }
+
+  async logout(token: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Logout failed');
+    }
+  }
+
+  async verifyToken(token: string): Promise<LoginResponse> {
+    const response = await fetch(`${this.baseUrl}/auth/verify`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const error: ApiError = result;
+      throw new Error(error.error || 'Token verification failed');
+    }
+
+    return result;
+  }
+
+  async resetPassword(request: ResetPasswordRequest): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Password reset failed');
+    }
+  }
+
+  async signup(credentials: SignupRequest): Promise<LoginResponse> {
+    const response = await fetch(`${this.baseUrl}/auth/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const error: ApiError = result;
+      throw new Error(error.error || 'Sign up failed');
+    }
+
+    return result;
+  }
+
+  async logActivity(activity: SessionActivity, token?: string): Promise<void> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/auth/log-activity`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(activity),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Activity logging failed');
+    }
+  }
+
+  async getSessionLogs(userId: string, token: string): Promise<SessionLog[]> {
+    const response = await fetch(`${this.baseUrl}/auth/sessions/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const error: ApiError = result;
+      throw new Error(error.error || 'Failed to get session logs');
+    }
+
+    return result.sessions;
+  }
+
+  // Dashboard endpoints
+  async getDashboardMetrics(): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/dashboard/metrics`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get dashboard metrics: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getMonthlyPredictions(): Promise<{ data: any[], timestamp: string }> {
+    const response = await fetch(`${this.baseUrl}/api/dashboard/monthly-predictions`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get monthly predictions: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getCropDistribution(): Promise<{ data: any[], timestamp: string }> {
+    const response = await fetch(`${this.baseUrl}/api/dashboard/crop-distribution`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get crop distribution: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  // Analytics endpoints
+  async getAccuracyTrend(): Promise<{ data: any[], timestamp: string }> {
+    const response = await fetch(`${this.baseUrl}/api/analytics/accuracy-trend`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get accuracy trend: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getRegionalDistribution(): Promise<{ data: any[], timestamp: string }> {
+    const response = await fetch(`${this.baseUrl}/api/analytics/regional-distribution`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get regional distribution: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getModelMetrics(): Promise<{ metrics: any[], timestamp: string }> {
+    const response = await fetch(`${this.baseUrl}/api/analytics/model-metrics`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get model metrics: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  async getPerformanceMetrics(): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/analytics/performance-metrics`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to get performance metrics: ${response.status}`);
+    }
+    
+    return response.json();
+  }
+
+  // Chatbot endpoint
+  async sendChatMessage(message: string, conversationId?: string): Promise<{
+    response: string;
+    conversationId: string;
+    suggestions?: string[];
+    context?: any;
+  }> {
+    const response = await fetch(`${this.baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        conversationId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const error: ApiError = result;
+      throw new Error(error.error || 'Chat request failed');
+    }
+
+    return result;
   }
 }
 

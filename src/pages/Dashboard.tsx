@@ -1,26 +1,104 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Users, Target, Leaf } from "lucide-react";
+import { api } from "@/services/api";
+import { toast } from "@/hooks/use-toast";
 
-const monthlyPredictions = [
-  { month: "Ene", predictions: 234 },
-  { month: "Feb", predictions: 289 },
-  { month: "Mar", predictions: 356 },
-  { month: "Abr", predictions: 423 },
-  { month: "May", predictions: 467 },
-  { month: "Jun", predictions: 543 },
-];
+interface DashboardMetrics {
+  predictions_generated: number;
+  predictions_change: number;
+  model_accuracy: number;
+  accuracy_change: number;
+  crops_analyzed: number;
+  new_crops: number;
+  active_users: number;
+  users_change: number;
+}
 
-const cropDistribution = [
-  { crop: "Maíz", count: 1234, color: "#10b981" },
-  { crop: "Frijol", count: 956, color: "#059669" },
-  { crop: "Arroz", count: 743, color: "#047857" },
-  { crop: "Café", count: 587, color: "#065f46" },
-  { crop: "Tomate", count: 432, color: "#064e3b" },
-];
+interface MonthlyPrediction {
+  month: string;
+  predictions: number;
+}
+
+interface CropDistribution {
+  crop: string;
+  count: number;
+  color: string;
+}
 
 const Dashboard = () => {
+  const [metrics, setMetrics] = useState<DashboardMetrics>({
+    predictions_generated: 0,
+    predictions_change: 0,
+    model_accuracy: 0,
+    accuracy_change: 0,
+    crops_analyzed: 0,
+    new_crops: 0,
+    active_users: 0,
+    users_change: 0
+  });
+  const [monthlyPredictions, setMonthlyPredictions] = useState<MonthlyPrediction[]>([]);
+  const [cropDistribution, setCropDistribution] = useState<CropDistribution[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch dashboard metrics
+      const metricsResponse = await api.getDashboardMetrics();
+      setMetrics(metricsResponse);
+
+      // Fetch monthly predictions data
+      const monthlyResponse = await api.getMonthlyPredictions();
+      setMonthlyPredictions(monthlyResponse.data);
+
+      // Fetch crop distribution data
+      const cropResponse = await api.getCropDistribution();
+      setCropDistribution(cropResponse.data);
+
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los datos del dashboard",
+        variant: "destructive"
+      });
+      // Use default data if API fails
+      setMetrics({
+        predictions_generated: 3456,
+        predictions_change: 12,
+        model_accuracy: 97.8,
+        accuracy_change: 2.1,
+        crops_analyzed: 24,
+        new_crops: 3,
+        active_users: 12847,
+        users_change: 8
+      });
+      setMonthlyPredictions([
+        { month: "Ene", predictions: 234 },
+        { month: "Feb", predictions: 289 },
+        { month: "Mar", predictions: 356 },
+        { month: "Abr", predictions: 423 },
+        { month: "May", predictions: 467 },
+        { month: "Jun", predictions: 543 },
+      ]);
+      setCropDistribution([
+        { crop: "Maíz", count: 1234, color: "#10b981" },
+        { crop: "Frijol", count: 956, color: "#059669" },
+        { crop: "Arroz", count: 743, color: "#047857" },
+        { crop: "Café", count: 587, color: "#065f46" },
+        { crop: "Tomate", count: 432, color: "#064e3b" },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -39,8 +117,12 @@ const Dashboard = () => {
               <Target className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">3,456</div>
-              <p className="text-xs text-green-600">+12% vs mes anterior</p>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : metrics.predictions_generated.toLocaleString()}
+              </div>
+              <p className="text-xs text-green-600">
+                {metrics.predictions_change > 0 ? "+" : ""}{metrics.predictions_change}% vs mes anterior
+              </p>
             </CardContent>
           </Card>
 
@@ -52,8 +134,12 @@ const Dashboard = () => {
               <TrendingUp className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">97.8%</div>
-              <p className="text-xs text-blue-600">+2.1% vs trimestre anterior</p>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : `${metrics.model_accuracy}%`}
+              </div>
+              <p className="text-xs text-blue-600">
+                {metrics.accuracy_change > 0 ? "+" : ""}{metrics.accuracy_change}% vs trimestre anterior
+              </p>
             </CardContent>
           </Card>
 
@@ -65,8 +151,12 @@ const Dashboard = () => {
               <Leaf className="h-4 w-4 text-emerald-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">24</div>
-              <p className="text-xs text-emerald-600">+3 nuevos cultivos</p>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : metrics.crops_analyzed}
+              </div>
+              <p className="text-xs text-emerald-600">
+                +{metrics.new_crops} nuevos cultivos
+              </p>
             </CardContent>
           </Card>
 
@@ -78,8 +168,12 @@ const Dashboard = () => {
               <Users className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">12,847</div>
-              <p className="text-xs text-purple-600">+8% vs mes anterior</p>
+              <div className="text-2xl font-bold text-gray-900">
+                {isLoading ? "..." : metrics.active_users.toLocaleString()}
+              </div>
+              <p className="text-xs text-purple-600">
+                {metrics.users_change > 0 ? "+" : ""}{metrics.users_change}% vs mes anterior
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -94,8 +188,13 @@ const Dashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={monthlyPredictions}>
+              {isLoading ? (
+                <div className="h-[300px] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={monthlyPredictions}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="month" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
@@ -113,8 +212,9 @@ const Dashboard = () => {
                     strokeWidth={3}
                     dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
                   />
-                </LineChart>
-              </ResponsiveContainer>
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
 
@@ -126,8 +226,13 @@ const Dashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={cropDistribution}>
+              {isLoading ? (
+                <div className="h-[300px] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={cropDistribution}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="crop" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
@@ -139,8 +244,9 @@ const Dashboard = () => {
                     }} 
                   />
                   <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
         </div>

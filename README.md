@@ -10,8 +10,6 @@
 
 Una plataforma que le dice a los agricultores qué cultivar basándose en datos reales de su terreno. Nada de suposiciones, pura ciencia de datos aplicada al campo mexicano.
 
-![Dashboard Preview](https://via.placeholder.com/800x400?text=Dashboard+Preview)
-
 ## 🎯 El Problema
 
 Los agricultores mexicanos pierden millones cada año por:
@@ -161,15 +159,6 @@ crop-recommendation/
     └── migrations/        # Cambios incrementales
 ```
 
-## 🔥 Lo que viene
-
-- [ ] App móvil (React Native)
-- [ ] Predicción de rendimiento esperado
-- [ ] Alertas climáticas automáticas
-- [ ] Marketplace de insumos
-- [ ] Modo offline para zonas rurales
-- [ ] Integración con drones para análisis aéreo
-
 ## 🤝 Contribuir
 
 ¿Quieres mejorar la agricultura mexicana? ¡Dale!
@@ -179,17 +168,6 @@ crop-recommendation/
 3. Commit tus cambios (`git commit -m 'Add: algo bien chido'`)
 4. Push al branch (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
-
-## 📸 Screenshots
-
-### Dashboard Principal
-![Dashboard](https://via.placeholder.com/800x400?text=Dashboard+Analytics)
-
-### Formulario de Predicción
-![Prediction Form](https://via.placeholder.com/800x400?text=Prediction+Form)
-
-### Histórico de Usuario
-![History](https://via.placeholder.com/800x400?text=User+History)
 
 ## 👥 El Equipo
 

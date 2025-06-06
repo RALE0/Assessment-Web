@@ -46,7 +46,6 @@ Backend:        Node.js + Express
 Database:       PostgreSQL
 ML Model:       Python + scikit-learn + torch
 Infra:          OpenStack instances + Nginx
-Cache:          Redis (porque la velocidad importa)
 ```
 
 ## 📊 Métricas del Modelo

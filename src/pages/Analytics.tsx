@@ -72,7 +72,7 @@ const Analytics = () => {
   const fetchAnalyticsData = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken'); // Fixed: use 'authToken' instead of 'token'
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };

@@ -83,27 +83,33 @@ const History = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('authToken');
-      const userLogs = await api.getUserPredictionLogs(user.id, token || undefined);
+      
+      // Now try with actual user
+      const response = await api.getUserPredictionLogs(user.id, token || undefined);
+      console.log('API Response:', response);
+      
+      // Handle the new response format with logs and pagination
+      const userLogs = response.logs || [];
       
       // Transform the backend response to match the frontend interface
       const transformedLogs = userLogs.map((log: any) => ({
         id: log.id,
-        userId: log.userId,
+        userId: log.userId || log.user_id,
         timestamp: log.timestamp,
         inputFeatures: {
-          N: log.inputFeatures.N,
-          P: log.inputFeatures.P,
-          K: log.inputFeatures.K,
-          temperature: log.inputFeatures.temperature,
-          humidity: log.inputFeatures.humidity,
-          ph: log.inputFeatures.ph,
-          rainfall: log.inputFeatures.rainfall
+          N: log.inputFeatures?.N || log.input_features?.N,
+          P: log.inputFeatures?.P || log.input_features?.P,
+          K: log.inputFeatures?.K || log.input_features?.K,
+          temperature: log.inputFeatures?.temperature || log.input_features?.temperature,
+          humidity: log.inputFeatures?.humidity || log.input_features?.humidity,
+          ph: log.inputFeatures?.ph || log.input_features?.ph,
+          rainfall: log.inputFeatures?.rainfall || log.input_features?.rainfall
         },
-        predictedCrop: log.predictedCrop,
+        predictedCrop: log.predictedCrop || log.predicted_crop,
         confidence: log.confidence,
-        topPredictions: log.topPredictions || [],
+        topPredictions: log.topPredictions || log.top_predictions || [],
         status: log.status || 'success',
-        processingTime: log.processingTime
+        processingTime: log.processingTime || log.processing_time
       }));
       
       setLogs(transformedLogs || []);
@@ -427,8 +433,23 @@ const History = () => {
               <div className="h-96 flex items-center justify-center">
                 <div className="text-center">
                   <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No se encontraron predicciones</p>
-                  <p className="text-sm text-gray-400">Intenta ajustar los filtros o realiza una nueva predicción</p>
+                  {logs.length === 0 ? (
+                    <>
+                      <p className="text-gray-500 text-lg mb-2">No tienes predicciones aún</p>
+                      <p className="text-sm text-gray-400 mb-4">Ve a la página de Recomendaciones para hacer tu primera predicción</p>
+                      <Button 
+                        onClick={() => window.location.href = '/recommendations'}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        Hacer Predicción
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-500">No se encontraron predicciones con los filtros aplicados</p>
+                      <p className="text-sm text-gray-400">Intenta ajustar los filtros para ver más resultados</p>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (

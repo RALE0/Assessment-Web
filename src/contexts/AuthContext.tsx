@@ -41,6 +41,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = user !== null;
 
+  // Helper function to parse JWT token
+  const parseJwt = (token: string): any => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Error parsing JWT:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     // Check for existing session on app load
     checkExistingSession();
@@ -50,6 +65,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const token = localStorage.getItem('authToken');
       if (token) {
+        // Parse JWT to get user info
+        const tokenData = parseJwt(token);
+        console.log('JWT Token data:', tokenData);
+        
         // Validate token with backend
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://172.28.69.96:8443'}/auth/verify`, {
           headers: {
@@ -59,7 +78,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (response.ok) {
           const userData = await response.json();
-          setUser(userData.user);
+          console.log('Verified user data:', userData);
+          
+          // Ensure user ID is properly set from token or response
+          const user = userData.user;
+          if (!user.id && tokenData) {
+            user.id = tokenData.user_id || tokenData.sub || tokenData.id;
+          }
+          
+          setUser(user);
         } else {
           localStorage.removeItem('authToken');
         }
@@ -89,13 +116,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const data = await response.json();
+      console.log('Login response:', data);
       
       // Store token and user data
       localStorage.setItem('authToken', data.token);
-      setUser(data.user);
+      
+      // Parse JWT to ensure we have the correct user ID
+      const tokenData = parseJwt(data.token);
+      const user = data.user;
+      if (!user.id && tokenData) {
+        user.id = tokenData.user_id || tokenData.sub || tokenData.id;
+      }
+      
+      setUser(user);
 
       // Log session start
-      await logSessionActivity('login', data.user.id);
+      await logSessionActivity('login', user.id);
     } finally {
       setIsLoading(false);
     }
@@ -149,13 +185,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const data = await response.json();
+      console.log('Signup response:', data);
       
       // Store token and user data
       localStorage.setItem('authToken', data.token);
-      setUser(data.user);
+      
+      // Parse JWT to ensure we have the correct user ID
+      const tokenData = parseJwt(data.token);
+      const user = data.user;
+      if (!user.id && tokenData) {
+        user.id = tokenData.user_id || tokenData.sub || tokenData.id;
+      }
+      
+      setUser(user);
 
       // Log signup activity
-      await logSessionActivity('login', data.user.id);
+      await logSessionActivity('login', user.id);
     } finally {
       setIsLoading(false);
     }

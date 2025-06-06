@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { CsvUpload } from "@/components/CsvUpload";
 import { ChatBot } from "@/components/ChatBot";
 import { api, PredictionRequest, PredictionResponse } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface FormData {
   N: number;
@@ -42,6 +43,7 @@ const Recommendations = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
   const [supportedCrops, setSupportedCrops] = useState<string[]>([]);
+  const { user } = useAuth();
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>();
 
@@ -141,7 +143,27 @@ const Recommendations = () => {
         rainfall: data.rainfall
       };
 
-      const result: PredictionResponse = await api.predictCrop(predictionRequest);
+      const token = localStorage.getItem('authToken');
+      const startTime = Date.now();
+      const result: PredictionResponse = await api.predictCrop(predictionRequest, token || undefined);
+      const processingTime = Date.now() - startTime;
+      
+      // Save prediction log if user is authenticated
+      if (user) {
+        try {
+          const token = localStorage.getItem('authToken');
+          await api.savePredictionLog({
+            userId: user.id,
+            inputFeatures: predictionRequest,
+            prediction: result,
+            processingTime: processingTime
+          }, token || undefined);
+          console.log('Prediction log saved successfully');
+        } catch (logError) {
+          console.error('Failed to save prediction log:', logError);
+          // Don't show error to user, as the prediction itself was successful
+        }
+      }
       
       // Convert API response to UI recommendations
       const mainRecommendation: Recommendation = {

@@ -144,12 +144,18 @@ class CropRecommendationAPI {
     return response.json();
   }
 
-  async predictCrop(data: PredictionRequest): Promise<PredictionResponse> {
+  async predictCrop(data: PredictionRequest, token?: string): Promise<PredictionResponse> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${this.baseUrl}/predict`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(data),
     });
 
@@ -572,8 +578,8 @@ class CropRecommendationAPI {
 
       const result = await response.json();
       return {
-        logs: result.data?.logs || [],
-        pagination: result.data?.pagination || { total: 0, limit: 50, offset: 0, hasMore: false }
+        logs: result.logs || [],
+        pagination: result.pagination || { total: 0, limit: 50, offset: 0, hasMore: false }
       };
     } catch (error: any) {
       // If it's already an Error object, re-throw it
@@ -640,7 +646,7 @@ class CropRecommendationAPI {
       }
 
       const result = await response.json();
-      return result.data || {
+      return result || {
         statistics: {
           totalPredictions: 0,
           successfulPredictions: 0,

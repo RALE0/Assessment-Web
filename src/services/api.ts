@@ -437,7 +437,7 @@ class CropRecommendationAPI {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/user/predictions`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/user-predictions`, {
       headers,
     });
     

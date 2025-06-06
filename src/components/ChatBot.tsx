@@ -174,17 +174,17 @@ export const ChatBot = () => {
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col space-y-4 p-4">
+      <CardContent className="flex-1 flex flex-col p-4 min-h-0">
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2 mb-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-lg p-3 ${
+              <div className={`max-w-[80%] rounded-lg p-3 break-words overflow-hidden ${
                 message.type === 'user' 
                   ? 'bg-purple-600 text-white' 
                   : 'bg-gray-100 text-gray-800'
               }`}>
-                <p className="text-sm whitespace-pre-line">{message.content}</p>
+                <p className="text-sm whitespace-pre-line break-words">{message.content}</p>
                 <p className="text-xs mt-1 opacity-70">
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
@@ -226,7 +226,7 @@ export const ChatBot = () => {
         </div>
 
         {/* Input Area */}
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 flex-shrink-0">
           <Input
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}

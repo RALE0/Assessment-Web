@@ -14,10 +14,10 @@ interface AboutMetrics {
 
 const About = () => {
   const [metrics, setMetrics] = useState<AboutMetrics>({
-    crops_analyzed: 24,
-    active_users: 12847,
-    success_rate: 95,
-    countries_served: 8
+    crops_analyzed: 0,
+    active_users: 0,
+    success_rate: 0,
+    countries_served: 0
   });
   const [isLoading, setIsLoading] = useState(true);
 

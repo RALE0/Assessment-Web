@@ -419,7 +419,7 @@ class CropRecommendationAPI {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/response-time-data`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/user/response-time-data`, {
       headers,
     });
     
@@ -437,7 +437,7 @@ class CropRecommendationAPI {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/user-predictions`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/user/predictions`, {
       headers,
     });
     
@@ -455,7 +455,7 @@ class CropRecommendationAPI {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/model-metrics`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/user/model-metrics`, {
       headers,
     });
     
@@ -473,7 +473,7 @@ class CropRecommendationAPI {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}/api/analytics/performance-metrics`, {
+    const response = await fetch(`${this.baseUrl}/api/analytics/user/performance-metrics`, {
       headers,
     });
     
@@ -507,25 +507,55 @@ class CropRecommendationAPI {
     suggestions?: string[];
     context?: any;
   }> {
-    const response = await fetch(`${this.baseUrl}/api/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message,
-        conversationId,
-      }),
-    });
+    try {
+      // Use the direct chat endpoint
+      const chatEndpoint = 'http://172.28.69.96:8443/chat';
+      
+      const response = await fetch(chatEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+        }),
+      });
 
-    const result = await response.json();
+      if (!response.ok) {
+        // Try to get error details from response
+        let errorMessage = `Chat request failed with status ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch {
+          // If we can't parse the error response, use the status-based message
+        }
+        throw new Error(errorMessage);
+      }
 
-    if (!response.ok) {
-      const error: ApiError = result;
-      throw new Error(error.error || 'Chat request failed');
+      const result = await response.json();
+
+      // Adapt the response format to what the ChatBot component expects
+      // Backend returns: { model, processing_time_ms, response, server_type, timestamp }
+      return {
+        response: result.response || result.message || 'No response received',
+        conversationId: conversationId || 'chat-session-' + Date.now(),
+        suggestions: result.suggestions || undefined,
+        context: {
+          model: result.model,
+          processingTime: result.processing_time_ms,
+          serverType: result.server_type,
+          timestamp: result.timestamp
+        }
+      };
+    } catch (error) {
+      // Handle network errors, timeout, or parsing errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to chat service. Please check your connection.');
+      }
+      // Re-throw other errors as-is
+      throw error;
     }
-
-    return result;
   }
 
   // User prediction logs endpoints

@@ -73,32 +73,19 @@ const Dashboard = () => {
         description: "No se pudieron cargar los datos del dashboard",
         variant: "destructive"
       });
-      // Use default data if API fails
+      // Use empty data if API fails - metrics will populate as user makes predictions
       setMetrics({
-        predictions_generated: 3456,
-        predictions_change: 12,
-        model_accuracy: 97.8,
-        accuracy_change: 2.1,
-        crops_analyzed: 24,
-        new_crops: 3,
-        active_users: 12847,
-        users_change: 8
+        predictions_generated: 0,
+        predictions_change: 0,
+        model_accuracy: 0,
+        accuracy_change: 0,
+        crops_analyzed: 0,
+        new_crops: 0,
+        active_users: 0,
+        users_change: 0
       });
-      setMonthlyPredictions([
-        { month: "Ene", predictions: 234 },
-        { month: "Feb", predictions: 289 },
-        { month: "Mar", predictions: 356 },
-        { month: "Abr", predictions: 423 },
-        { month: "May", predictions: 467 },
-        { month: "Jun", predictions: 543 },
-      ]);
-      setCropDistribution([
-        { crop: "Maíz", count: 1234, color: "#10b981" },
-        { crop: "Frijol", count: 956, color: "#059669" },
-        { crop: "Arroz", count: 743, color: "#047857" },
-        { crop: "Café", count: 587, color: "#065f46" },
-        { crop: "Tomate", count: 432, color: "#064e3b" },
-      ]);
+      setMonthlyPredictions([]);
+      setCropDistribution([]);
     } finally {
       setIsLoading(false);
     }
@@ -122,10 +109,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : metrics.predictions_generated.toLocaleString()}
+                {isLoading ? "..." : metrics.predictions_generated?.toLocaleString() || "0"}
               </div>
               <p className="text-xs text-green-600">
-                {metrics.predictions_change > 0 ? "+" : ""}{metrics.predictions_change}% vs mes anterior
+                {(metrics.predictions_change || 0) > 0 ? "+" : ""}{metrics.predictions_change || 0}% vs mes anterior
               </p>
             </CardContent>
           </Card>
@@ -139,10 +126,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : `${metrics.model_accuracy}%`}
+                {isLoading ? "..." : `${metrics.model_accuracy || 0}%`}
               </div>
               <p className="text-xs text-blue-600">
-                {metrics.accuracy_change > 0 ? "+" : ""}{metrics.accuracy_change}% vs trimestre anterior
+                {(metrics.accuracy_change || 0) > 0 ? "+" : ""}{metrics.accuracy_change || 0}% vs trimestre anterior
               </p>
             </CardContent>
           </Card>
@@ -156,10 +143,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : metrics.crops_analyzed}
+                {isLoading ? "..." : metrics.crops_analyzed || 0}
               </div>
               <p className="text-xs text-emerald-600">
-                +{metrics.new_crops} nuevos cultivos
+                +{metrics.new_crops || 0} nuevos cultivos
               </p>
             </CardContent>
           </Card>
@@ -173,10 +160,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : metrics.active_users.toLocaleString()}
+                {isLoading ? "..." : metrics.active_users?.toLocaleString() || "0"}
               </div>
               <p className="text-xs text-purple-600">
-                {metrics.users_change > 0 ? "+" : ""}{metrics.users_change}% vs mes anterior
+                {(metrics.users_change || 0) > 0 ? "+" : ""}{metrics.users_change || 0}% vs mes anterior
               </p>
             </CardContent>
           </Card>

@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8000,
+    proxy: {
+      '/chat-api': {
+        target: 'http://172.28.69.96:8443',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/chat-api/, ''),
+      },
+    },
   },
   plugins: [
     react(),

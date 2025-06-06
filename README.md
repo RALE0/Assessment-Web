@@ -42,7 +42,7 @@ Metemos los datos del terreno → La IA hace su magia → Sale la recomendación
 
 ```
 Frontend:       React.js + Tailwind CSS
-Backend:        Node.js + Express
+Backend:        Node.js + Express + Nginx
 Database:       PostgreSQL
 ML Model:       Python + scikit-learn + torch
 Infra:          OpenStack instances

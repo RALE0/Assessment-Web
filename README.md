@@ -175,7 +175,7 @@ Somos estudiantes del Tec que queremos cambiar la forma de cultivar en México:
 - **[Luis Rico]** - ML Engineer - *"Los datos no mienten"*
 - **[Ian Holender]** - Backend Dev - *"Si funciona, no lo toques"*
 - **[David Vieyra]** - Frontend Dev - *"Que se vea bonito Y funcione"*
-- **[Omar Rivera]** - Full Stack - *"De todo un poco"*
+- **[Omar Rivera]** - Full Stack - *"Siembro bugs en desarrollo, cosecho features en producción"*
 
 ## 📜 Licencia
 

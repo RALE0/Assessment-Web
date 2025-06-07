@@ -1,0 +1,25 @@
+[Unit]
+Description=Flask Backend Application
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=exec
+User=Ciscos
+Group=users
+WorkingDirectory=/home/Ciscos/back
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/home/Ciscos/back/venv/bin/python3 /home/Ciscos/back/app.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=flask-app
+
+# Security options
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

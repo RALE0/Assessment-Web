@@ -1,0 +1,35 @@
+[Unit]
+Description=Crop Recommendation Frontend Service
+Documentation=https://github.com/user/crop-recommendation-frontend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/home/Ciscos/front
+ExecStart=/usr/bin/npm run preview -- --port 8000 --host 0.0.0.0
+Restart=always
+RestartSec=10
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Environment variables
+Environment=NODE_ENV=production
+Environment=PORT=8000
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=crop-frontend
+
+[Install]
+WantedBy=multi-user.target

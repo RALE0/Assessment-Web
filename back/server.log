@@ -1,0 +1,16 @@
+/home/Ciscos/back/venv/lib/python3.11/site-packages/flask_limiter/extension.py:324: UserWarning: Using the in-memory storage for tracking rate limits as no storage was explicitly specified. This is not recommended for production use. See: https://flask-limiter.readthedocs.io#configuring-a-storage-backend for documentation about configuring the storage backend.
+  warnings.warn(
+2025-06-06 19:51:45,404 - __main__ - INFO - GPU inference client connected successfully
+2025-06-06 19:51:45,417 - __main__ - INFO - Available models: ['RemoteGPUModel']
+2025-06-06 19:51:45,438 - __main__ - INFO - Database connection test result: OK
+2025-06-06 19:51:45,438 - __main__ - INFO - Starting Flask application with HTTPS...
+Connection with SQL has been established and properly tested
+ * Serving Flask app 'app'
+ * Debug mode: off
+2025-06-06 19:51:45,441 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on https://127.0.0.1:8443
+ * Running on https://172.28.69.96:8443
+2025-06-06 19:51:45,441 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-06 19:52:02,844 - werkzeug - INFO - 172.28.69.96 - - [06/Jun/2025 19:52:02] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2025-06-06 19:52:19,163 - werkzeug - INFO - 172.28.69.96 - - [06/Jun/2025 19:52:19] "GET /api/health HTTP/1.1" 200 -

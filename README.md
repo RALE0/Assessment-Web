@@ -48,22 +48,12 @@ ML Model:       Python + scikit-learn + torch
 Infra:          OpenStack instances + Nginx
 ```
 
-## 📊 Métricas del Modelo
-
-| Métrica | Score | Status |
-|---------|-------|---------|
-| Precisión | 97.8% | 🟢 Excelente |
-| Recall | 94.2% | 🟢 Bueno |
-| F1-Score | 95.9% | 🟢 Excelente |
-| Especificidad | 96.4% | 🟢 Excelente |
-
 ## 🚦 Instalación
 
 ### Prerequisitos
 - Node.js 16+
 - PostgreSQL 14+
 - Python 3.8+
-- Redis (opcional pero recomendado)
 
 ### 1. Clona el repo
 ```bash
@@ -71,33 +61,27 @@ git clone https://github.com/tu-usuario/crop-recommendation.git
 cd crop-recommendation
 ```
 
-### 2. Variables de entorno
-```bash
-cp .env.example .env
-# Edita .env con tus credenciales
-```
-
-### 3. Base de datos
+### 2. Base de datos
 ```bash
 psql -U postgres -f database/schema.sql
 psql -U postgres -f database/seeds.sql  # Datos de prueba
 ```
 
-### 4. Backend
+### 3. Backend
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-### 5. Frontend
+### 4. Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-### 6. Modelo ML (opcional)
+### 5. Modelo ML
 ```bash
 cd ml-model
 pip install -r requirements.txt
@@ -155,12 +139,12 @@ crop-recommendation/
 │   └── models/            # Modelos entrenados
 └── database/
     ├── schema.sql         # Estructura DB
-    └── migrations/        # Cambios incrementales
+    └── migrations/        # Cambios
 ```
 
 ## 🤝 Contribuir
 
-¿Quieres mejorar la agricultura mexicana? ¡Dale!
+¿Quieres mejorar la agricultura? ¡Dale!
 
 1. Fork el proyecto
 2. Crea tu feature branch (`git checkout -b feature/AmazingFeature`)
@@ -170,7 +154,7 @@ crop-recommendation/
 
 ## 👥 El Equipo
 
-Somos estudiantes del Tec que queremos cambiar la forma de cultivar en México:
+Somos estudiantes del Tec que queremos cambiar la forma de cultivar:
 
 - **[Luis Rico]** - ML Engineer - *"Los datos no mienten"*
 - **[Ian Holender]** - Backend Dev - *"Si funciona, no lo toques"*
@@ -185,13 +169,11 @@ MIT License - úsalo como quieras, pero invítanos un café si te hace millonari
 
 - A los agricultores que confían en la tecnología
 - Al profe Octavio por aguantarnos
-- A Stack Overflow por existir
 - Al café por mantenernos despiertos
 
 ---
 
 <p align="center">
-  Hecho con 💚 en México para México
   <br>
   <sub>Y sí, funciona con maíz 🌽</sub>
 </p>

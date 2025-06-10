@@ -1,0 +1,149 @@
+{
+  "DropClassifier": {
+    "metrics": {
+      "val_loss": 0.04361965933640022,
+      "accuracy": 0.9863636363636363,
+      "f1_macro": 0.9862234655309468,
+      "f1_micro": 0.9863636363636363,
+      "f1_weighted": 0.9863840652462191,
+      "avg_inference_time_ms": 0.02597059522356306,
+      "total_predictions": 880
+    },
+    "overfitting_analysis": {
+      "final_gap": 0.03307842564910451,
+      "max_gap": 0.042766009637575944,
+      "avg_gap": 0.012457420142969692,
+      "overfitting_start_epoch": null,
+      "overfitting_level": "Moderado",
+      "gap_trend": [
+        0.03709431956494448,
+        0.03344302834219499,
+        0.03496967290976456,
+        0.03144325737403483,
+        0.0418686895292402,
+        0.031435015740931875,
+        0.0364483168402027,
+        0.03275690573458892,
+        0.03447701795569932,
+        0.03307842564910451
+      ]
+    },
+    "convergence_analysis": {
+      "epochs_to_converge": 29,
+      "train_reduction_rate": 0.02537749383705611,
+      "val_reduction_rate": 0.022090572348024484,
+      "train_stability": 0.0013219575648501455,
+      "val_stability": 0.002452068454435206,
+      "final_train_loss": 0.009376231373088168,
+      "final_val_loss": 0.04245465702219268,
+      "best_val_loss": 0.0408988363404725,
+      "best_val_loss_epoch": 106
+    },
+    "timing": {
+      "training_time_seconds": 2.996066093444824,
+      "training_time_formatted": "3.0s",
+      "start_datetime": "2025-05-25T00:29:54.070751",
+      "end_datetime": "2025-05-25T00:29:57.066821",
+      "epochs_trained": 113,
+      "time_per_epoch": 0.026513859234024995
+    }
+  },
+  "DeepDropoutClassifier": {
+    "metrics": {
+      "val_loss": 0.042800573632121086,
+      "accuracy": 0.9818181818181818,
+      "f1_macro": 0.981811294421582,
+      "f1_micro": 0.9818181818181818,
+      "f1_weighted": 0.9817683821812927,
+      "avg_inference_time_ms": 0.15089341572352818,
+      "total_predictions": 880
+    },
+    "overfitting_analysis": {
+      "final_gap": -0.162498572192687,
+      "max_gap": -0.09104769452824257,
+      "avg_gap": -0.22404121649707942,
+      "overfitting_start_epoch": null,
+      "overfitting_level": "Bajo",
+      "gap_trend": [
+        -0.09104769452824257,
+        -0.09424462804703841,
+        -0.1014716957995136,
+        -0.16495391634470297,
+        -0.1381438416428864,
+        -0.14913990364099544,
+        -0.13633485941127654,
+        -0.1717857251087913,
+        -0.1866850740680959,
+        -0.162498572192687
+      ]
+    },
+    "convergence_analysis": {
+      "epochs_to_converge": 45,
+      "train_reduction_rate": 0.02465952705858009,
+      "val_reduction_rate": 0.019833537881828046,
+      "train_stability": 0.032314443522889015,
+      "val_stability": 0.003511460952007761,
+      "final_train_loss": 0.20534823329320975,
+      "final_val_loss": 0.04284966110052275,
+      "best_val_loss": 0.03514934893298362,
+      "best_val_loss_epoch": 93
+    },
+    "timing": {
+      "training_time_seconds": 6.865862131118774,
+      "training_time_formatted": "6.9s",
+      "start_datetime": "2025-05-25T00:29:57.077276",
+      "end_datetime": "2025-05-25T00:30:03.943143",
+      "epochs_trained": 100,
+      "time_per_epoch": 0.06865862131118775
+    }
+  },
+  "Conv1DClassifier": {
+    "metrics": {
+      "val_loss": 0.05330293958208391,
+      "accuracy": 0.9784090909090909,
+      "f1_macro": 0.9782149855042493,
+      "f1_micro": 0.9784090909090909,
+      "f1_weighted": 0.9784411405554191,
+      "avg_inference_time_ms": 1.1425018310546875,
+      "total_predictions": 880
+    },
+    "overfitting_analysis": {
+      "final_gap": -0.07943849707953632,
+      "max_gap": -0.051714804863357645,
+      "avg_gap": -0.158929168392512,
+      "overfitting_start_epoch": null,
+      "overfitting_level": "Bajo",
+      "gap_trend": [
+        -0.11301556086566833,
+        -0.05617401072578061,
+        -0.1350032685066773,
+        -0.07533578424980597,
+        -0.09936067344443428,
+        -0.08451413759584761,
+        -0.07433120400154232,
+        -0.10178707633167507,
+        -0.08954394961169568,
+        -0.07943849707953632
+      ]
+    },
+    "convergence_analysis": {
+      "epochs_to_converge": null,
+      "train_reduction_rate": 0.011545299033024843,
+      "val_reduction_rate": 0.01068002116465622,
+      "train_stability": 0.019396660719829883,
+      "val_stability": 0.0036491492699112335,
+      "final_train_loss": 0.12730151042342186,
+      "final_val_loss": 0.04786301334388554,
+      "best_val_loss": 0.04647058216921453,
+      "best_val_loss_epoch": 223
+    },
+    "timing": {
+      "training_time_seconds": 36.81511306762695,
+      "training_time_formatted": "36.8s",
+      "start_datetime": "2025-05-25T00:30:03.957253",
+      "end_datetime": "2025-05-25T00:30:40.772370",
+      "epochs_trained": 242,
+      "time_per_epoch": 0.1521285663951527
+    }
+  }
+}

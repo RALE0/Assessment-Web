@@ -81,13 +81,6 @@ npm install
 npm start
 ```
 
-### 5. Modelo ML
-```bash
-cd ml-model
-pip install -r requirements.txt
-python train_model.py
-```
-
 ## 🎮 Cómo usar
 
 ### API Endpoints
